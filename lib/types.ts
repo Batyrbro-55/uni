@@ -1,0 +1,4 @@
+export type Deadline={label:string;date:string;url:string;status:string;note:string;verifiedOn:string};
+export type Source={title:string;url:string;category:string;checked:string};
+export type ApplicationGuide={platform:string;url:string;steps:string[];checked:string};
+export type University={hidden?:boolean;checklist?:string[];application?:ApplicationGuide;addedOn?:string;id:string;name:string;country:string;domain:string;interest:string;website:string;aid:string;funding:string;priority:string;needPolicy?:string;scholarship?:string;warning?:string;css?:string;verifiedOn:string;hiddenGem:boolean;testing:string;testingNote:string;english:string;fit:string;alignment:string;selectivity:string;credentialCheck:string;deadlines:Deadline[];deadlineStatus:string;sources:Source[];sourceIndex:Record<string,string|null>;details:Record<string,string|number|boolean|null>;status:string;notes:string};

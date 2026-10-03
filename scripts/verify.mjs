@@ -1,0 +1,7 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';import ts from 'typescript';
+const records=JSON.parse(fs.readFileSync('data/universities.json'));
+assert.equal(records.length,232);assert.equal(new Set(records.map(u=>u.id)).size,232);assert(records.every(u=>u.name&&u.sources.length&&Array.isArray(u.deadlines)));
+let stored=null;const exports={};let source=fs.readFileSync('lib/browser-storage.ts','utf8').replace("import records from '@/data/universities.json';",'');const js=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText;
+const context={exports,records,localStorage:{getItem:()=>stored,setItem:(_k,v)=>{stored=v}}};vm.runInNewContext(js,context);
+assert.equal(exports.readUniversities().length,232);let id=records[0].id;exports.saveProgress(id,{status:'Shortlisted',notes:'Test note',checklist:['x']});exports.saveProgress(id,{hidden:true});let row=exports.readUniversities()[0];assert.equal(row.notes,'Test note');assert.equal(row.hidden,true);assert.equal(row.status,'Shortlisted');exports.saveProgress(id,{hidden:false});assert.equal(exports.readUniversities()[0].notes,'Test note');context.localStorage.setItem=()=>{throw Error('Quota exceeded')};assert.throws(()=>exports.saveProgress(id,{notes:'unsaved'}));assert.equal(exports.readUniversities()[0].notes,'Test note');stored='bad json';assert.throws(()=>exports.readUniversities());console.log('PASS: 232 unique records, progress reload, partial updates, hide/restore preservation, storage failure handling.');
+
